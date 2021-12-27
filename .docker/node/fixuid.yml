@@ -1,0 +1,7 @@
+user: node
+group: node
+paths:
+  - /
+  - /home/node/.cache
+  - /home/node/.npm
+  - /home/node/.npm-packages

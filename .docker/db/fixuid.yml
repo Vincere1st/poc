@@ -1,0 +1,5 @@
+user: mongodb
+group: mongodb
+paths:
+  - /
+  - /data/db

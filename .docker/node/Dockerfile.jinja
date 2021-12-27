@@ -1,0 +1,21 @@
+FROM node:lts-alpine3.13
+LABEL maintainer="Vincent Ostyn<vincerecaro@gmail.com>"
+
+RUN npm i --global npm
+WORKDIR /app
+
+USER node
+# RUN mkdir -p /home/node/.npm-packages && chown -R node /home/node/.npm-packages
+RUN npm config set prefix /home/node/.npm-packages
+ENV PATH="${PATH}:/home/node/.npm-packages/bin"
+
+RUN npm install -g npm-check-updates
+RUN npm install -g @nestjs/cli
+
+
+RUN mkdir -p /home/node/.cache && chown -R node /home/node/.cache
+RUN mkdir -p /home/node/.npm && chown -R node /home/node/.npm
+
+RUN ls -la /home/node
+VOLUME /app
+VOLUME /home/node/.cache

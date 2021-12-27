@@ -1,0 +1,17 @@
+###> inetum-orleans/docker-devbox ###
+/.certs/poc.test.key
+/.certs/poc.test.crt
+/.certs/.signer.crt
+/.bin/ncu
+/.bin/node
+/.bin/npm
+/.bin/npx
+/.bin/typeorm
+/docker-compose.yml
+/.docker/node/Dockerfile
+/.docker/db/Dockerfile
+/*ddb.local.*
+/.bash_enter
+/.bash_leave
+/.bin/nest
+###< inetum-orleans/docker-devbox ###
