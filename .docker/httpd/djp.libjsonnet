@@ -1,0 +1,25 @@
+local ddb = import 'ddb.docker.libjsonnet';
+
+local defaultName = ddb.File(std.thisFile).parent.name;
+
+local factory(name, params={}) =
+	local o = {
+		domain: ddb.params.value(params, 'domain', ddb.subDomain(name)),
+		vhost: ddb.params.array(params, 'vhost'),
+	};
+
+	{services+: {
+		[name]+:
+			ddb.Build(defaultName) +
+			{
+				volumes+: [
+					ddb.path.project + ":/var/www/html"
+				] + std.mapWithIndex(function(index, vhost) ddb.path.project + vhost + ":/usr/local/apache2/conf/custom/vhost_" + std.toString(index) + ".conf", o.vhost)
+			},
+		}
+	};
+
+{
+  factory: factory,
+  defaultName: defaultName
+}

@@ -1,0 +1,14 @@
+db.auth('root', 'password')
+
+db = db.getSiblingDB('test-database')
+
+db.createUser({
+    user: '{{core.domain.sub}}',
+    pwd: '{{core.domain.sub}}',
+    roles: [
+        {
+            role: 'dbOwner',
+            db: '{{core.domain.sub}}',
+        },
+    ],
+});

@@ -1,0 +1,44 @@
+<VirtualHost *:80>
+  ServerAdmin webmaster@{{core.domain.sub}}.{{core.domain.ext}}
+  ServerName api.{{core.domain.sub}}.{{core.domain.ext}}
+
+  <Proxy *>
+    Require all granted
+  </Proxy>
+
+  ProxyPass / http://node-dist.{{ jsonnet.docker.compose.network_name }}:3000/
+  ProxyPassReverse / http://node-dist.{{ jsonnet.docker.compose.network_name }}:3000/
+  ProxyPreserveHost On
+</VirtualHost>
+
+<VirtualHost *:80>
+  ServerAdmin webmaster@{{core.domain.sub}}.{{core.domain.ext}}
+  ServerName {{core.domain.sub}}.{{core.domain.ext}}
+
+  DocumentRoot /var/www/html/frontend/dist/
+
+  <Directory "/var/www/html/frontend/dist/">
+    DirectoryIndex index.html
+
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+    Require all granted
+
+    Options +FollowSymLinks
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule ^(static|VERSION|COMMITHASH)($|/) - [L]
+    RewriteRule ^index\.html$ - [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /index.html [L]
+
+    # See https://github.com/vuejs-templates/pwa/blob/development/docs/prevent_caching.md#how-to-add-caching-headers-for-your-server
+    FileETag None
+    Header unset ETag
+    Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+  </Directory>
+
+</VirtualHost>

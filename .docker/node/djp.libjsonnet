@@ -1,0 +1,37 @@
+local ddb = import 'ddb.docker.libjsonnet';
+
+local defaultName = ddb.File(std.thisFile).parent.name;
+
+// Docker compose configuration factory for this package.
+local factory(name, params={}) =
+    // Sanitize and set params default values in o using ddb.params.value and ddb.params.array.
+	local o = {
+		binaryCondition: ddb.params.value(params, 'binaryCondition', null),
+        exe: ddb.params.value(params, 'exe', true),
+        binaries: ddb.params.value(params, 'binaries', true)
+	};
+
+    // Return a docker compose configuration that should configure this package inside a global configuration.
+	{services+: {
+		[name]+:
+			ddb.Build(defaultName)  +
+			ddb.User() +
+			(if o.binaries then ddb.Binary("node", "/project", "node", exe=true, condition=o.binaryCondition) else{}) +
+			(if o.binaries then ddb.Binary("npm", "/project", "npm", exe=true, condition=o.binaryCondition) else{}) +
+            (if o.binaries then ddb.Binary("npx", "/project", "npx", exe=true, condition=o.binaryCondition) else{}) +
+            (if o.binaries then ddb.Binary("nest", "/project", "nest", exe=o.exe, condition=o.binaryCondition) else {}) +
+			{
+			      tty: o.exe && o.binaries,
+				  volumes+: [
+					 ddb.path.project + ":/project",
+                     name + "-cache:/home/node/.cache",
+                     name + "-npm-packages:/home/node/.npm-packages"
+				  ]
+			}
+		}
+	};
+
+{
+  factory: factory,
+  defaultName: defaultName
+}

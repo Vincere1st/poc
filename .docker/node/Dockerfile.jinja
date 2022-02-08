@@ -1,21 +1,34 @@
-FROM node:lts-alpine3.13
-LABEL maintainer="Vincent Ostyn<vincerecaro@gmail.com>"
+FROM node:14
 
-RUN npm i --global npm
-WORKDIR /app
+RUN mkdir -p /project
+WORKDIR /project
 
 USER node
-# RUN mkdir -p /home/node/.npm-packages && chown -R node /home/node/.npm-packages
+
 RUN npm config set prefix /home/node/.npm-packages
 ENV PATH="${PATH}:/home/node/.npm-packages/bin"
 
 RUN npm install -g npm-check-updates
+RUN npm install -g concurrently
 RUN npm install -g @nestjs/cli
+ RUN npm install -g @vue/cli
 
+{% if '.docker/node/.certs/*' is found_with_glob %}
+USER root
+
+{% if '.docker/node/.certs/.*' is found_with_glob %}
+COPY .certs/.* /usr/local/share/ca-certificates/
+RUN mv /usr/local/share/ca-certificates/.signer.crt /usr/local/share/ca-certificates/signer.crt
+{% endif %}
+COPY .certs/* /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
+
+USER node
+{% endif %}
 
 RUN mkdir -p /home/node/.cache && chown -R node /home/node/.cache
 RUN mkdir -p /home/node/.npm && chown -R node /home/node/.npm
 
-RUN ls -la /home/node
-VOLUME /app
+VOLUME /project
 VOLUME /home/node/.cache

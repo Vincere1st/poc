@@ -2,7 +2,6 @@
 /.certs/poc.test.key
 /.certs/poc.test.crt
 /.certs/.signer.crt
-/.bin/ncu
 /.bin/node
 /.bin/npm
 /.bin/npx
@@ -13,5 +12,14 @@
 /*ddb.local.*
 /.bash_enter
 /.bash_leave
+/.certs/api.poc.test.key
+/.certs/api.poc.test.crt
+/.bin/ts-node
+/.docker/httpd/Dockerfile
+/.docker/httpd/vhost.conf
 /.bin/nest
+/.docker/db/mongo-init-js
+/.docker/db/mongoInit-js
+/.docker/db/mongoInit.js
+/.docker/db/mongo-init.js
 ###< inetum-orleans/docker-devbox ###

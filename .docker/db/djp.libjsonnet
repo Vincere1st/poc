@@ -1,0 +1,37 @@
+local ddb = import 'ddb.docker.libjsonnet';
+
+local defaultName = ddb.File(std.thisFile).parent.name;
+
+local factory(name, params={}) =
+	local o = {
+		database: ddb.params.value(params, 'database', ddb.projectName),
+		login: ddb.params.value(params, 'login', self.database),
+		password: ddb.params.value(params, 'password', self.login),
+		script: ddb.params.array(params, 'script')
+	};
+
+	{services+: {
+		[name]+:
+			ddb.Build(defaultName) +
+			ddb.User() +
+			ddb.Expose("27017") +
+			{
+                tty: true,
+				environment+: {
+                  "MONGODB_INITDB_DATABASE": o.database,
+                  "MONGO_INITDB_ROOT_USERNAME": "root",
+                  "MONGO_INITDB_ROOT_PASSWORD": "password",
+				},
+				volumes+: [
+					ddb.path.project + ":/project",
+					"database:/data/db",
+					"./.docker/db/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js"
+				]
+			}
+		}
+	};
+
+{
+  factory: factory,
+  defaultName: defaultName
+}
