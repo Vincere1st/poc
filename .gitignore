@@ -22,4 +22,13 @@
 /.docker/db/mongoInit-js
 /.docker/db/mongoInit.js
 /.docker/db/mongo-init.js
+/.bin/pnpm
+/.docker/nginx/nginx.conf
+/.docker/mqtt/Dockerfile
+/.docker/zigbee2mqtt/Dockerfile
+/.docker/nginx/Dockerfile
 ###< inetum-orleans/docker-devbox ###
+
+/.idea
+.idea
+/.pnpm-store

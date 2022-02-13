@@ -1,0 +1,177 @@
+networks:
+  default:
+    name: poc-default
+  reverse-proxy:
+    external: true
+    name: reverse-proxy
+services:
+  db:
+    build:
+      context: .docker/db
+    environment:
+      MONGODB_INITDB_DATABASE: poc
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_ROOT_USERNAME: root
+    init: true
+    ports:
+    - 16317:27017
+    restart: 'no'
+    tty: true
+    user: 1000:1000
+    volumes:
+    - /home/vincere/project/poc:/project
+    - database:/data/db
+    - ./.docker/db/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+  mqtt:
+    build:
+      context: .docker/mqtt
+    command: mosquitto -c /mosquitto-no-auth.conf
+    init: true
+    labels:
+      ddb.emit.certs:generate[poc-mqtt]: mqtt.poc.test
+      traefik.enable: 'true'
+      traefik.http.routers.poc-mqtt-tls.rule: Host(`mqtt.poc.test`)
+      traefik.http.routers.poc-mqtt-tls.service: poc-mqtt
+      traefik.http.routers.poc-mqtt-tls.tls: 'true'
+      traefik.http.routers.poc-mqtt.rule: Host(`mqtt.poc.test`)
+      traefik.http.routers.poc-mqtt.service: poc-mqtt
+      traefik.http.services.poc-mqtt.loadbalancer.server.port: '1883'
+    networks:
+    - default
+    - reverse-proxy
+    ports:
+    - 16384:1883/tcp
+    restart: unless-stopped
+    tty: true
+    volumes:
+    - /home/vincere/project/poc/core/src/libs/zigbeePlugin/zigbee2mqtt/mosquitto/data:/mosquitto/data
+    - /home/vincere/project/poc/core/src/libs/zigbeePlugin/zigbee2mqtt/mosquitto/log:/mosquitto/log
+    - /home/vincere/project/poc/core/src/libs/zigbeePlugin/zigbee2mqtt/mosquitto/conf:/mosquitto/conf
+  nginx:
+    build:
+      context: .docker/nginx
+    init: true
+    labels:
+      ddb.emit.certs:generate[poc-z2m]: z2m.poc.test
+      traefik.enable: 'true'
+      traefik.http.routers.poc-z2m-tls.rule: Host(`z2m.poc.test`)
+      traefik.http.routers.poc-z2m-tls.service: poc-z2m
+      traefik.http.routers.poc-z2m-tls.tls: 'true'
+      traefik.http.routers.poc-z2m.rule: Host(`z2m.poc.test`)
+      traefik.http.routers.poc-z2m.service: poc-z2m
+      traefik.http.services.poc-z2m.loadbalancer.server.port: '80'
+    networks:
+    - default
+    - reverse-proxy
+    restart: 'no'
+    tty: true
+    volumes:
+    - /home/vincere/project/poc/.docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:rw
+    - /home/vincere/project/poc:/app:rw
+  node:
+    build:
+      context: .docker/node
+    environment:
+    - NODE_ENV=dev
+    init: true
+    labels:
+      ddb.emit.certs:generate[poc-backend]: api.poc.test
+      ddb.emit.certs:generate[poc-frontend]: poc.test
+      ddb.emit.docker:binary[nest](args): nest
+      ddb.emit.docker:binary[nest](exe): true
+      ddb.emit.docker:binary[nest](name): nest
+      ddb.emit.docker:binary[nest](workdir): /project
+      ddb.emit.docker:binary[node](args): node
+      ddb.emit.docker:binary[node](exe): true
+      ddb.emit.docker:binary[node](name): node
+      ddb.emit.docker:binary[node](workdir): /project
+      ddb.emit.docker:binary[npm](args): npm
+      ddb.emit.docker:binary[npm](exe): true
+      ddb.emit.docker:binary[npm](name): npm
+      ddb.emit.docker:binary[npm](workdir): /project
+      ddb.emit.docker:binary[npx](args): npx
+      ddb.emit.docker:binary[npx](exe): true
+      ddb.emit.docker:binary[npx](name): npx
+      ddb.emit.docker:binary[npx](workdir): /project
+      ddb.emit.docker:binary[pnpm](args): pnpm
+      ddb.emit.docker:binary[pnpm](exe): true
+      ddb.emit.docker:binary[pnpm](name): pnpm
+      ddb.emit.docker:binary[pnpm](workdir): /project
+      ddb.emit.docker:binary[ts-node](args): /project/core/node_modules/.bin/ts-node
+      ddb.emit.docker:binary[ts-node](condition): project_cwd.startswith("core")
+      ddb.emit.docker:binary[ts-node](exe): true
+      ddb.emit.docker:binary[ts-node](name): ts-node
+      ddb.emit.docker:binary[ts-node](workdir): /project
+      ddb.emit.docker:binary[typeorm](args): /project/core/node_modules/.bin/ts-node
+        --transpile-only /project/core/node_modules/typeorm/cli.js
+      ddb.emit.docker:binary[typeorm](condition): project_cwd.startswith("backend")
+      ddb.emit.docker:binary[typeorm](exe): true
+      ddb.emit.docker:binary[typeorm](name): typeorm
+      ddb.emit.docker:binary[typeorm](workdir): /project
+      traefik.enable: 'true'
+      traefik.http.routers.poc-backend-tls.rule: Host(`api.poc.test`)
+      traefik.http.routers.poc-backend-tls.service: poc-backend
+      traefik.http.routers.poc-backend-tls.tls: 'true'
+      traefik.http.routers.poc-backend.rule: Host(`api.poc.test`)
+      traefik.http.routers.poc-backend.service: poc-backend
+      traefik.http.routers.poc-frontend-tls.rule: Host(`poc.test`)
+      traefik.http.routers.poc-frontend-tls.service: poc-frontend
+      traefik.http.routers.poc-frontend-tls.tls: 'true'
+      traefik.http.routers.poc-frontend.rule: Host(`poc.test`)
+      traefik.http.routers.poc-frontend.service: poc-frontend
+      traefik.http.services.poc-backend.loadbalancer.server.port: '3000'
+      traefik.http.services.poc-frontend.loadbalancer.server.port: '8080'
+    networks:
+    - default
+    - reverse-proxy
+    ports:
+    - 16329:9229
+    - 16380:8080
+    - 16383:1883/tcp
+    restart: 'no'
+    tty: true
+    user: 1000:1000
+    volumes:
+    - /home/vincere/project/poc:/project
+    - node-cache:/home/node/.cache
+    - node-npm-packages:/home/node/.npm-packages
+  zigbee2mqtt:
+    build:
+      context: .docker/zigbee2mqtt
+    devices:
+    - /dev/ttyACM0:/dev/ttyACM0
+    environment:
+    - TZ=Europe/Paris
+    - ZIGBEE2MQTT_CONFIG_MQTT_BASE_TOPIC=zigbee2mqtt
+    - ZIGBEE2MQTT_CONFIG_MQTT_SERVER=mqtt://mqtt.poc.test:16384
+    - ZIGBEE2MQTT_CONFIG_SERIAL_PORT=/dev/ttyACM0
+    - ZIGBEE2MQTT_CONFIG_FRONTEND_PORT=8081
+    - ZIGBEE2MQTT_CONFIG_FRONTEND_HOST=172.20.0.7
+    - ZIGBEE2MQTT_CONFIG_PERMIT_JOIN=false
+    init: true
+    labels:
+      ddb.emit.certs:generate[poc-z2m]: z2m.poc.test
+      traefik.enable: 'true'
+      traefik.http.routers.poc-z2m-tls.rule: Host(`z2m.poc.test`)
+      traefik.http.routers.poc-z2m-tls.service: poc-z2m
+      traefik.http.routers.poc-z2m-tls.tls: 'true'
+      traefik.http.routers.poc-z2m.rule: Host(`z2m.poc.test`)
+      traefik.http.routers.poc-z2m.service: poc-z2m
+      traefik.http.routers.poc-z2m.entrypoints: web
+      traefik.http.services.poc-z2m.loadbalancer.server.port: '8081'
+      traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: 'http'
+    networks:
+    - default
+    - reverse-proxy
+    ports:
+    - 16381:8081
+    restart: unless-stopped
+    tty: true
+    volumes:
+    - /home/vincere/project/poc/core/src/libs/zigbeePlugin/zigbee2mqtt/zigbee2mqtt-data:/app/data
+    - /run/udev:/run/udev:ro
+version: '3.7'
+volumes:
+  database: {}
+  node-cache: {}
+  node-npm-packages: {}

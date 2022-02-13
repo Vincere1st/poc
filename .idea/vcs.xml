@@ -3,5 +3,15 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/core" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/core/src/libs/Gladys" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/core/src/libs/zigbee2mqtt" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/core/src/libs/zigbee2mqtt/zigbee2mqtt" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/core/src/libs/zigbeePlugin/src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/core/src/libs/zigbeePlugin/zigbee2MQTT" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/core/src/zigbee2mqtt" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/core/zigbee2mqtt" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/zigbee-api" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/zigbee-service" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/zigbee2mqtt" vcs="Git" />
   </component>
 </project>

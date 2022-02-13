@@ -5,7 +5,6 @@ import * as path from 'path'
 @Injectable()
 export class PluginService {
     constructor(@Inject('FOLDER') private folder) {
-        console.log(this.get())
     }
 
     get(): string {

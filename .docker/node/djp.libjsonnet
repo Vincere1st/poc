@@ -20,6 +20,7 @@ local factory(name, params={}) =
 			(if o.binaries then ddb.Binary("npm", "/project", "npm", exe=true, condition=o.binaryCondition) else{}) +
             (if o.binaries then ddb.Binary("npx", "/project", "npx", exe=true, condition=o.binaryCondition) else{}) +
             (if o.binaries then ddb.Binary("nest", "/project", "nest", exe=o.exe, condition=o.binaryCondition) else {}) +
+            (if o.binaries then ddb.Binary("pnpm", "/project", "pnpm", exe=o.exe, condition=o.binaryCondition) else {}) +
 			{
 			      tty: o.exe && o.binaries,
 				  volumes+: [
