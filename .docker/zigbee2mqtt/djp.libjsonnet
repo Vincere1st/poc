@@ -1,0 +1,30 @@
+local ddb = import 'ddb.docker.libjsonnet';
+
+local defaultName = ddb.File(std.thisFile).parent.name;
+
+local factory(name, params={}) =
+	{services+: {
+	    [name]+:
+	    ddb.Build(defaultName) +
+	    ddb.Expose("8081") +
+	   {
+        tty: true,
+        environment: [
+            "TZ=Europe/Paris"
+        ],
+        devices: [
+            "/dev/ttyACM0:/dev/ttyACM0"
+        ],
+        volumes+: [
+            ddb.path.project + "/core/src/libs/zigbeePlugin/zigbee2mqtt/zigbee2mqtt-data:/app/data",
+            "/run/udev:/run/udev:ro"
+        ],
+        restart: "unless-stopped"
+	   }
+	}
+
+	};
+	{
+      factory: factory,
+      defaultName: defaultName
+    }

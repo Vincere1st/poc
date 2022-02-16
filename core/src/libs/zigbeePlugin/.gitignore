@@ -1,0 +1,5 @@
+/node_modules
+/zigbee2mqtt/*
+/zigbee2mqtt/mosquitto/conf/*
+/zigbee2mqtt/mosquitto/data/*
+/zigbee2mqtt/mosquitto/log/*

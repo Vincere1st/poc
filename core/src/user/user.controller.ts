@@ -15,7 +15,7 @@ import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { GetUserDto } from './dto/get-user.dto'
-import MongooseClassSerializerInterceptor from '../Interceptors/mongooseClassSerializerInterceptor'
+import MongooseClassSerializerInterceptor from '@domoInterceptors/mongooseClassSerializerInterceptor'
 import { UserDto } from './dto/user.dto'
 
 @Controller('user')

@@ -13,7 +13,7 @@ RUN npm install -g pnpm
 RUN npm install -g npm-check-updates
 RUN npm install -g concurrently
 RUN npm install -g @nestjs/cli
-RUN npm install -g @vue/cli
+RUN npm init vue@latest
 
 {% if '.docker/node/.certs/*' is found_with_glob %}
 USER root

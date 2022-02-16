@@ -1,0 +1,26 @@
+local ddb = import 'ddb.docker.libjsonnet';
+
+local defaultName = ddb.File(std.thisFile).parent.name;
+
+local factory(name, params={}) =
+	{services+: {
+	    [name]+:
+	    ddb.Build(defaultName) +
+	    ddb.Expose("1883", "84", "tcp") +
+	   {
+	    tty: true,
+	    volumes+: [
+            ddb.path.project + "/core/src/libs/zigbeePlugin/zigbee2mqtt/mosquitto/data:/mosquitto/data",
+            ddb.path.project + "/core/src/libs/zigbeePlugin/zigbee2mqtt/mosquitto/log:/mosquitto/log",
+            ddb.path.project + "/core/src/libs/zigbeePlugin/zigbee2mqtt/mosquitto/conf:/mosquitto/conf"
+	    ],
+        command: "mosquitto -c /mosquitto-no-auth.conf",
+        restart: "unless-stopped"
+	   }
+	}
+
+	};
+	{
+      factory: factory,
+      defaultName: defaultName
+    }

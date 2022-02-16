@@ -5,7 +5,7 @@ import { Model } from 'mongoose'
 import { CreateUserDto } from './dto/create-user.dto'
 import { GetUserDto } from './dto/get-user.dto'
 import { UserDto } from './dto/user.dto'
-import MongooseClassSerializerInterceptor from '../Interceptors/mongooseClassSerializerInterceptor'
+import MongooseClassSerializerInterceptor from '@domoInterceptors/mongooseClassSerializerInterceptor'
 
 @Injectable()
 export class UserRepository {
