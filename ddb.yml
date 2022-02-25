@@ -1,4 +1,4 @@
 jsonnet:
   docker:
-    compose:
-      excluded_services: []
+    virtualhost:
+      redirect_to_https: false

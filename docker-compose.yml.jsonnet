@@ -4,11 +4,11 @@ ddb.Compose(
     ddb.with(import '.docker/node/djp.libjsonnet',
         append=
             (if ddb.env.is("dev") then ddb.VirtualHost("8080", ddb.domain, "frontend") else {})
-            + (if ddb.env.is("dev") then ddb.VirtualHost("3000", ddb.subDomain("api"), "backend") else {})
+            + (if ddb.env.is("dev") then ddb.VirtualHost("3000", ddb.subDomain("api"), "core") else {})
             + ddb.Expose(9229)
             + ddb.Expose(8080)
             + ddb.Expose(1883, null,"tcp")
-            + ddb.Binary("typeorm", "/project", "/project/core/node_modules/.bin/ts-node --transpile-only /project/core/node_modules/typeorm/cli.js", exe=true, condition='project_cwd.startswith("backend")')
+            + ddb.Binary("typeorm", "/project", "/project/core/node_modules/.bin/ts-node --transpile-only /project/core/node_modules/typeorm/cli.js", exe=true, condition='project_cwd.startswith("core")')
             + ddb.Binary("ts-node", "/project", "/project/core/node_modules/.bin/ts-node", exe=true, condition='project_cwd.startswith("core")')
             + {
                   environment+: if ddb.env.is("dev") then [
@@ -33,7 +33,7 @@ ddb.Compose(
 
     + ddb.with(import '.docker/httpd/djp.libjsonnet',
         params={vhost: "/.docker/httpd/vhost.conf"},
-        append=ddb.VirtualHost("80", ddb.domain, "dist-frontend") + ddb.VirtualHost("80", ddb.subDomain("api"), "dist-backend"),
+        append=ddb.VirtualHost("80", ddb.domain, "dist-frontend") + ddb.VirtualHost("80", ddb.subDomain("api"), "dist-core"),
         when=!ddb.env.is('dev')
         )
 

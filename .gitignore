@@ -22,6 +22,7 @@
 /.docker/db/mongoInit-js
 /.docker/db/mongoInit.js
 /.docker/db/mongo-init.js
+/.docker/node/.certs
 /.bin/pnpm
 /.docker/nginx/nginx.conf
 /.docker/mqtt/Dockerfile
