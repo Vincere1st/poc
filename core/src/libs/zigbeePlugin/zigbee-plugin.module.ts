@@ -3,7 +3,6 @@ import { ZigbeePluginController } from './zigbee-plugin.controller'
 import { ZigbeePluginService } from './zigbee-plugin.service'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 
-
 @Module({
     imports: [
         ClientsModule.register([
@@ -11,7 +10,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices'
                 name: 'TEST_CLIENT',
                 transport: Transport.MQTT,
                 options: {
-                    subscribeOptions: { qos: 0 },
+                    subscribeOptions: { qos: 2 },
                     url: 'mqtt://mqtt.poc.test:16384'
                 }
             },

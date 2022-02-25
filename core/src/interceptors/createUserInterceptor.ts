@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor, } from '@nestjs/common'
 import { map, Observable } from 'rxjs'
-import { CreateUserDto } from '../user/dto/create-user.dto'
+import { CreateUserDto } from '../users/dto/create-user.dto'
 
 @Injectable()
 export class CreateUserInterceptor implements NestInterceptor {

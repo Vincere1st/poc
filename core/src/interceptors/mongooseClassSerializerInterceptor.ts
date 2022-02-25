@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common'
 import { ClassTransformOptions, plainToClass } from 'class-transformer'
 import { Document } from 'mongoose'
-
+// found https://wanago.io/2021/08/23/api-nestjs-relationships-mongodb/
 function MongooseClassSerializerInterceptor(
     classToIntercept: Type,
 ): typeof ClassSerializerInterceptor {

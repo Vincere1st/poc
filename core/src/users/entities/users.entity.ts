@@ -1,7 +1,7 @@
 import {Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
-import { Exclude, Expose } from 'class-transformer'
 import { v4 as uuidv4 } from 'uuid'
+import {Exclude} from "class-transformer";
 
 export type UserDocument = User & Document
 

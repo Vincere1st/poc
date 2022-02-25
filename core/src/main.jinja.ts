@@ -5,8 +5,8 @@ import { ValidationPipe } from '@nestjs/common'
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, { cors: false })
     app.enableCors({
-        origin: 'http://poc.test',
-        // credentials: true,
+        origin: 'http://{{core.domain.value}}',
+        credentials: true,
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE, OPTIONS'
     })
     app.useGlobalPipes(new ValidationPipe())

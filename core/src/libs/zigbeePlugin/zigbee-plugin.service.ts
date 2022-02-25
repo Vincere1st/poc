@@ -1,10 +1,9 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common'
-import { exec } from 'child_process'
-import simpleGit from 'simple-git'
-import { ClientProxy, MicroserviceOptions, MqttRecordBuilder, Transport } from '@nestjs/microservices'
-import { NestFactory } from '@nestjs/core'
-import { useFactory } from '../../../../zigbee-service'
-import { AppModule } from '../../app.module'
+import {Inject, Injectable, OnModuleInit} from '@nestjs/common'
+import {ClientProxy, MicroserviceOptions, MqttRecordBuilder, Transport} from '@nestjs/microservices'
+import {NestFactory} from '@nestjs/core'
+import {AppModule} from '../../app.module'
+import {map, Observable, Subject} from "rxjs";
+import {ZigbeePluginController} from "@domoPlugins/zigbeePlugin/zigbee-plugin.controller";
 
 // const Docker = require('dockerode')
 
@@ -15,18 +14,28 @@ export class ZigbeePluginService implements OnModuleInit {
     }
 
     constructor(
-        @Inject('TEST_CLIENT') private client: ClientProxy)
-    {
+        @Inject('TEST_CLIENT') private client: ClientProxy,
+    ) {
         client.connect()
     }
 
-    sumDataService(payload: number []) {
-        const response = payload
-        const record = new MqttRecordBuilder(`${response}`)
+    public subject = new Subject()
+    private payload
+    private zigbeePluginController: ZigbeePluginController
+
+    getDataService(payload: number []) {
+        const record = new MqttRecordBuilder(`${payload}`)
             .setQoS(2)
             .build()
         this.client.send('zigbee2mqtt-output', record).subscribe(res => {
             console.log('response output: <', res, '>')
+        })
+        this.subject.next({ data: { payload } })
+    }
+
+    setObservable(payload) {
+        this.subject.subscribe(x=> {
+            console.log({test: x})
         })
     }
 
@@ -35,7 +44,7 @@ export class ZigbeePluginService implements OnModuleInit {
         const microservice = app.connectMicroservice({
             transport: Transport.MQTT,
             options: {
-                subscribeOptions: { qos: 2 },
+                subscribeOptions: {qos: 2},
                 url: 'mqtt://mqtt.poc.test:16384',
             }
         })
