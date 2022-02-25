@@ -2,7 +2,7 @@ import { DynamicModule, Logger, Module } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { PluginController } from './plugin/plugin.controller';
-
+// code found here thks Disane87
 export const PLUGIN_PATH = path.normalize(path.join(process.cwd(), 'dist/libs'));
 
 @Module({
