@@ -1,55 +1,43 @@
-import {Inject, Injectable, OnModuleInit} from '@nestjs/common'
-import {ClientProxy, MicroserviceOptions, MqttRecordBuilder, Transport} from '@nestjs/microservices'
-import {NestFactory} from '@nestjs/core'
-import {AppModule} from '../../app.module'
-import {map, Observable, Subject} from "rxjs";
-import {ZigbeePluginController} from "@domoPlugins/zigbeePlugin/zigbee-plugin.controller";
+import {Injectable} from '@nestjs/common'
+import {MicroserviceOptions, Transport} from '@nestjs/microservices'
+import {Subject} from "rxjs";
+import microserviceLoader from "../../plugin/microserviceLoader";
 
 // const Docker = require('dockerode')
 
 @Injectable()
-export class ZigbeePluginService implements OnModuleInit {
-    onModuleInit() {
-        this.main()
-    }
-
-    constructor(
-        @Inject('TEST_CLIENT') private client: ClientProxy,
-    ) {
-        client.connect()
+export class ZigbeePluginService {
+    constructor() {
+        this.addMicroserviceMqtt()
     }
 
     public subject = new Subject()
-    private payload
-    private zigbeePluginController: ZigbeePluginController
 
-    getDataService(payload: number []) {
-        const record = new MqttRecordBuilder(`${payload}`)
-            .setQoS(2)
-            .build()
-        this.client.send('zigbee2mqtt-output', record).subscribe(res => {
-            console.log('response output: <', res, '>')
-        })
-        this.subject.next({ data: { payload } })
-    }
-
-    setObservable(payload) {
-        this.subject.subscribe(x=> {
-            console.log({test: x})
-        })
-    }
-
-    async main() {
-        const app = await NestFactory.create(AppModule)
-        const microservice = app.connectMicroservice({
+    addMicroserviceMqtt() {
+        const mqttmicroservice: MicroserviceOptions = {
             transport: Transport.MQTT,
             options: {
                 subscribeOptions: {qos: 2},
-                url: 'mqtt://mqtt.poc.test:16384',
+                url: 'mqtt://mqtt.poc.test:16384'
             }
-        })
+        }
+        microserviceLoader.addMicroservice(mqttmicroservice)
+    }
 
-        await app.startAllMicroservices()
+    // getDataService(payload: number []) {
+    //     const record = new MqttRecordBuilder(`${payload}`)
+    //         .setQoS(2)
+    //         .build()
+    //     this.client.send('zigbee2mqtt-output', record).subscribe(res => {
+    //         console.log('response output: <', res, '>')
+    //     })
+    //     this.subject.next({ data: { payload } })
+    // }
+
+
+    constructSubject(payload) {
+        this.subject.next({data: {payload}})
+        console.log(this.subject)
     }
 
     async buildContainerZigbee2Mqtt(): Promise<string> {
