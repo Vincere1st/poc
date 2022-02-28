@@ -1,7 +1,6 @@
-import {Controller, Get, Post, Request, Sse, MessageEvent, UseInterceptors} from '@nestjs/common'
+import {Controller, Post, Request, Sse} from '@nestjs/common'
 import {ZigbeePluginService} from './zigbee-plugin.service'
-import {Ctx, MqttContext, MessagePattern, Payload} from '@nestjs/microservices'
-import {interval, map, Observable, Subject, tap} from 'rxjs'
+import {Ctx, MessagePattern, MqttContext, Payload} from '@nestjs/microservices'
 
 @Controller('zigbee2mqtt')
 export class ZigbeePluginController {
@@ -28,7 +27,7 @@ export class ZigbeePluginController {
         console.log(`---NEW Message ${context.getTopic()}---`)
         console.log('Payload: ', payload)
         console.log('Packet: ', context.getPacket())
-        this.zigbeePluginService.constructSubject(payload);
+        this.zigbeePluginService.constructSubject({payload, context});
     }
 
 
