@@ -2,7 +2,7 @@
   <header>
     <div class="wrapper">
       <nav>
-        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/mqtt">MQTT</RouterLink>
       </nav>
     </div>
   </header>
@@ -16,44 +16,21 @@
       {{ user.username }}, {{ user.email }}
     </li>
   </ul>
+  <PluginRender/>
   <RouterView/>
 </template>
 <script setup lang="ts">
-import {RouterLink, RouterView} from 'vue-router'
-import {ref, onMounted} from 'vue'
+
+import { ref } from 'vue'
+
 import axios from 'axios'
 import createAuthRefreshInterceptor from 'axios-auth-refresh'
-import mqtt from 'mqtt'
-// voir fichier vite.config.ts pour le mqtt il y a un alias pour éviter une erreur console
+import PluginRender from '@/vueFactory/PluginRender.vue'
 
 const username = ref<string | null>(null)
 const password = ref<string | null>(null)
 const users = ref()
 const message = ref(null)
-
-// const connection = {
-//   host: 'mqtt.poc.test',
-//   port: 16384,
-// }
-//
-// const subscription = {
-//   topic: 'zigbee2mqtt/+',
-//   qos: 2
-// }
-
-// const createConnection = () => {
-//   const { host, port } = connection
-//   const connectUrl = `ws://${host}:${port}`
-//   try {
-//     this.client = mqtt.connect(connectUrl)
-//   } catch (error) {
-//     console.log('mqtt.connect error', error)
-//   }
-// }
-//
-// onMounted(() => {
-//   createConnection()
-// })
 
 const login = async () => {
   const res = await axios.post('http://api.poc.test/auth/login', {
@@ -82,18 +59,8 @@ const getUsers = async () => {
 createAuthRefreshInterceptor(axios, refreshAuthLogic)
 
 const eventSource = new EventSource('http://api.poc.test/zigbee2mqtt/zigbee')
-eventSource.onmessage = ({ data }) => {
+eventSource.onmessage = ({data}) => {
   message.value = data
   console.log('NEW Message', data)
 }
-// const client: mqtt.Client = mqtt.connect('mqtt://mqtt.poc.test:16384')
-// client.subscribe('zigbee2mqtt/+')
-// client.on('connect', (topic, message, packet) => {
-//   console.log('Received Message: ' + message.toString() + '\nOn topic: ' + topic)
-// })
-
-
 </script>
-<style>
-
-</style>
