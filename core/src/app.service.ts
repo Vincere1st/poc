@@ -6,4 +6,4 @@ export class AppService {
     pong(): string {
         return 'pong'
     }
-}
+ }

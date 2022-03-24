@@ -1,60 +1,50 @@
 <template>
-  <component :is="dynamicComponent"/>
+  <ul v-if="dynamicComponent">
+    <li v-for="component in dynamicComponent">
+      <component :is="component"/>
+    </li>
+  </ul>
 </template>
 <script setup lang="ts">
-import { loadModule, Options } from "vue3-sfc-loader";
-import {defineAsyncComponent, computed, ref, onMounted, ComponentOptions} from 'vue'
+export interface VueFrontPlugin {
+  name: string
+  content: string
+}
+
+import { loadModule, type Options } from "vue3-sfc-loader";
+import { defineAsyncComponent, type ComponentOptions, ref, markRaw } from 'vue'
 import * as Vue from 'vue'
 import axios from "axios";
-const dynamicComponent = ref<ComponentOptions<any> | null>(null)
 
-onMounted(() => render())
+const dynamicComponent = ref<ComponentOptions<VueFrontPlugin>>([])
+const components = ref(null)
+const plugins = ref<VueFrontPlugin[]>([])
+
+
+const options: Options = {
+  moduleCache: { vue: Vue },
+  getFile: async (name: string) => {
+    for (const plugin of plugins.value) {
+      if (plugin.name === name) {
+        return plugin.content
+      }
+    }
+  },
+  addStyle: () => {
+  },
+}
 
 const render = async () => {
-  const component: ComponentOptions<any> = await loadModule('http://api.poc.test/plugins/list', options)
-  dynamicComponent.value = component
-}
+  const res = await axios.get('http://api.poc.test/plugins/list', { params: { directory: 'plugins' } })
+  plugins.value = res.data
 
-const options: Options= {
-  moduleCache: {
-    vue: Vue
-  },
-  getFile: async (url) => {
-    if (typeof url === 'string') {
-      const res = await axios.get(url)
-
-      return {
-        getContentData: () => res.data[0]
-      }
-    }
-  },
-  addStyle(textContent: string, scopeId?: string) {
-    textContent = '\n' + textContent.trim()
-    const style = Object.assign(document.createElement('style'), {textContent})
-    style.type = 'text/css'
-    style.dataset.componentRender = 'true'
-    if (scopeId) {
-      style.dataset.componentRenderScope = scopeId
-    }
-
-    const existingStyles = document.getElementsByTagName('style')
-
-    let toRemove = []
-    for (let i = 0; i < existingStyles.length; i++) {
-      const existingStyle = existingStyles.item(i)
-      if (existingStyle && existingStyle.dataset.componentRender) {
-        toRemove.push(existingStyle)
-      }
-    }
-    for (const existingStyle of toRemove) {
-      document.head.removeChild(existingStyle)
-    }
-    document.head.insertBefore(style, existingStyles[-1] || null)
-  },
-  log: (type: 'log' | 'error', ...data: unknown[]) => {
-    console.log({type, data})
+  for (const plugin of plugins.value) {
+    const component = defineAsyncComponent(async () => await loadModule(plugin.name, options))
+    dynamicComponent.value.push(markRaw(component))
   }
 }
+
+render()
 
 </script>
 <style lang="scss">

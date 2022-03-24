@@ -12,7 +12,8 @@
     "baseUrl": "./src",
     "paths": {
       "@domoInterceptors/*": ["interceptors/*"],
-      "@domoPlugins/*": ["libs/*"]
+      "@domoPlugins/*": ["libs/*"],
+      "@projectDirectory/*" : ["/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

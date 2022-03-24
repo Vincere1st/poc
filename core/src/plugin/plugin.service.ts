@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common'
 import * as fs from 'fs'
 import * as path from 'path'
+import {readFile} from "fs/promises";
 
 @Injectable()
 export class PluginService {

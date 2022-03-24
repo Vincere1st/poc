@@ -28,6 +28,7 @@
 /.docker/mqtt/Dockerfile
 /.docker/zigbee2mqtt/Dockerfile
 /.docker/nginx/Dockerfile
+/.bin/vite
 ###< inetum-orleans/docker-devbox ###
 
 /.idea

@@ -1,12 +1,25 @@
-import { DynamicModule, Logger, Module } from '@nestjs/common';
+import {DynamicModule, Logger, Module} from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
-import { PluginController } from './plugin/plugin.controller';
+import {PluginController} from './plugin.controller';
+import {PluginService} from "./plugin.service";
+import {PluginsRepository} from "./plugin.repository";
+import {MongooseModule} from "@nestjs/mongoose";
+import {Plugins, PluginsSchema} from "./entities/plugins.entity";
+import {AppService} from "../app.service";
+import {PluginInstallerService} from "./installer/plugin.installer.service";
 // code found here https://github.com/nestjs/nest/issues/3307 thks Disane87
 export const PLUGIN_PATH = path.normalize(path.join(process.cwd(), 'dist/libs'));
 
 @Module({
+    imports: [MongooseModule.forFeature([{name: Plugins.name, schema: PluginsSchema}])],
     controllers: [PluginController],
+    providers: [{
+        provide: PluginService,
+        useValue: 'FOLDER'
+    },
+        PluginInstallerService,
+        PluginsRepository]
 })
 export class PluginModule {
 
@@ -32,7 +45,7 @@ export class PluginModule {
                 allPlugins.forEach((module: DynamicModule) => {
                     const foundModuleEntryName = Object.keys(module).find(key => key.indexOf('Module'));
                     if (foundModuleEntryName) {
-                        this.pluginsArray.push({ name: foundModuleEntryName, module: module[foundModuleEntryName] });
+                        this.pluginsArray.push({name: foundModuleEntryName, module: module[foundModuleEntryName]});
                         Logger.log(`Plugin '${foundModuleEntryName}' loaded`, 'LoadPlugins');
                     }
                 });

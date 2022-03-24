@@ -8,6 +8,8 @@ import { UsersRepository } from './users/users.repository'
 import { PluginModule } from './plugin/plugin.module'
 import { AuthModule } from './auth/auth.module'
 import { UsersModule } from './users/users.module'
+import {PluginController} from "./plugin/plugin.controller";
+import {PluginService} from "./plugin/plugin.service";
 @Module({
     imports: [
         MongooseModule.forRoot('mongodb://root:password@poc.test:16317'),
