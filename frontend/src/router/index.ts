@@ -1,5 +1,5 @@
 import HomeVue from '@/views/Home.vue'
-import PlayVue from '@/components/play.vue'
+import playVue from '@/components/play.vue'
 import {createRouter, createWebHistory} from 'vue-router'
 import MqttPlugin from '../views/MqttPlugin.vue'
 
@@ -18,8 +18,7 @@ const router = createRouter({
         },
         {
             path: "/playvue",
-            name: "Play",
-            component: PlayVue
+            component: playVue
         }
     ],
 })

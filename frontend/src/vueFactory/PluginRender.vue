@@ -35,7 +35,7 @@ const options: Options = {
 }
 
 const render = async () => {
-  const res = await axios.get('http://api.poc.test/plugins/list', { params: { directory: 'plugins' } })
+  const res = await axios.get('https://api.poc.test/plugins/list', { params: { directory: 'plugins' } })
   plugins.value = res.data
 
   for (const plugin of plugins.value) {
