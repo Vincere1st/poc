@@ -6,7 +6,7 @@ import microserviceLoader from "./plugin/microserviceLoader";
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, { cors: false })
     app.enableCors({
-        origin: 'http://poc.test',
+        origin: 'https://poc.test',
         credentials: true,
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE, OPTIONS'
     })

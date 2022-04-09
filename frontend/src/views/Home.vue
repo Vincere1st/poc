@@ -14,6 +14,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import axios from 'axios'
+import mqtt from 'mqtt'
 import createAuthRefreshInterceptor from 'axios-auth-refresh'
 import PluginRender from '@/vueFactory/PluginRender.vue'
 const username = ref<string | null>(null)
@@ -22,7 +23,7 @@ const users = ref()
 const message = ref(null)
 
 const login = async () => {
-  const res = await axios.post('http://api.poc.test/auth/login', {
+  const res = await axios.post('https://api.poc.test/auth/login', {
     username: username.value, password: password.value
   },
     {
@@ -35,21 +36,22 @@ const login = async () => {
 }
 
 // Function that will be called to refresh authorization
-const refreshAuthLogic = failedRequest => axios.post('http://api.poc.test/auth/token/refresh').then(tokenRefreshResponse => {
+const refreshAuthLogic = failedRequest => axios.post('https://api.poc.test/auth/token/refresh').then(tokenRefreshResponse => {
   localStorage.setItem('token', tokenRefreshResponse.data.token);
   failedRequest.response.config.headers['Authorization'] = 'Bearer ' + tokenRefreshResponse.data.token;
   return Promise.resolve();
 });
 
 const getUsers = async () => {
-  const res = await axios.get('http://api.poc.test/users', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
+  const res = await axios.get('https://api.poc.test/users', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
   users.value = res.data
 }
 createAuthRefreshInterceptor(axios, refreshAuthLogic)
 
-const eventSource = new EventSource('http://api.poc.test/zigbee2mqtt/zigbee')
+const eventSource = new EventSource('https://api.poc.test/zigbee2mqtt/zigbee')
 eventSource.onmessage = ({ data }) => {
   message.value = data
   console.log('NEW Message', data)
 }
+
 </script>
